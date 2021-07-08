@@ -70,7 +70,7 @@ Seu projeto deve ter o comportamento parecido com o do gif abaixo quando finaliz
 
   - Projeto individual;
   - Serão `X` dias de projeto.
-  - Data de entrega para avaliação final do projeto: `DD/MM/YYYY - 14:00h`.
+  - Data de entrega para avaliação final do projeto: `19/07/2021 - 14:00h`.
 
 ---
 
