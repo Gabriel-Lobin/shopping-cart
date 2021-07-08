@@ -16,7 +16,9 @@ function createCartItemElement({ id: sku, title: name, base_price: salePrice }) 
 
 const jogaNoCarrin = (event) => {
   const clicado = event.target.parentElement;
+  console.log(clicado);
   fetch(`https://api.mercadolibre.com/items/${getSkuFromProductItem(clicado)}`)
+    .then((retorno) => retorno.json())
     .then((produto) => createCartItemElement(produto))
     .then((lista) => document.querySelector('.cart__items').appendChild(lista));
 };
