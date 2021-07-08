@@ -1,11 +1,11 @@
 function getSkuFromProductItem(item) {
   return item.querySelector('span.item__sku').innerText;
 }
-
+// função para o escutador do item no carrinho
 function cartItemClickListener(event) {
   event.target.remove();
 }
-
+// cria os elementos para o carrinho
 function createCartItemElement({ id: sku, title: name, price: salePrice }) {
   const li = document.createElement('li');
   li.className = 'cart__item';
@@ -13,7 +13,7 @@ function createCartItemElement({ id: sku, title: name, price: salePrice }) {
   li.addEventListener('click', cartItemClickListener);
   return li;
 }
-
+// coloca o item no carrinho de compras.
 const jogaNoCarrin = (event) => {
   const clicado = event.target.parentElement;
   console.log(clicado);
@@ -22,7 +22,7 @@ const jogaNoCarrin = (event) => {
     .then((produto) => createCartItemElement(produto))
     .then((lista) => document.querySelector('.cart__items').appendChild(lista));
 };
-
+// cria os elementos para o produto
 function createProductImageElement(imageSource) {
   const img = document.createElement('img');
   img.className = 'item__image';
@@ -58,9 +58,17 @@ const MimDeMercadoLivre = () => fetch('https://api.mercadolibre.com/sites/MLB/se
   .then((retorno) => retorno.json())
   .then(({ results }) => results)
   .catch(() => alert('Consegui Não :('));
+// limpar o carrinho de compras
+const limpaCarrin = () => {
+  const ol = document.querySelector('.cart__items');
+  while (ol.firstChild) {
+    ol.removeChild(ol.lastChild);
+  }
+};
 
 window.onload = () => {
   MimDeMercadoLivre()
     .then((arrayProdutos) => forecheProduct(arrayProdutos))
     .catch((erro) => alert(erro));
+  document.querySelector('.empty-cart').addEventListener('click', limpaCarrin);
 };
