@@ -87,7 +87,7 @@ Você pode adicionar outros arquivos se julgar necessário. Qualquer dúvida, pr
 ## Antes de começar a desenvolver:
 
 1. Clone o repositório
-  * `git clone git@github.com:betrybe/sd-013-b-project-shopping-cart.git`.
+  * `git clone git@github.com:tryber/sd-013-b-project-shopping-cart.git`.
   * Entre na pasta do repositório que você acabou de clonar:
     * `cd sd-013-b-project-shopping-cart`
 
