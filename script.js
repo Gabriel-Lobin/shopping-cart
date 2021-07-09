@@ -1,17 +1,16 @@
 let valorDoCarrinho = 0;
-const valorNoCarrin = (price, operador) => {
-  return new Promise((resolve, reject) => {
-    if (!price) {
-      valorDoCarrinho = 0;
-    } if (operador === '+') {
-      valorDoCarrinho += price;
-    } if (operador === '-') {
-      valorDoCarrinho -= price;
-    }
-    resolve(valorDoCarrinho);
-    reject();
-  });
-};
+const valorNoCarrin = (price, operador) => new Promise((resolve, reject) => {
+  if (!price) {
+    valorDoCarrinho = 0;
+  } if (operador === '+') {
+    valorDoCarrinho += price;
+  } if (operador === '-') {
+    valorDoCarrinho -= price;
+  }
+  resolve(valorDoCarrinho);
+  reject();
+});
+
 // pega o id do produto clicado
 function getSkuFromProductItem(item) {
   return item.querySelector('span.item__sku').innerText;
