@@ -11,6 +11,15 @@ const valorNoCarrin = (price, operador) => new Promise((resolve, reject) => {
   reject();
 });
 
+const appendCartItem = (item) => {
+  document.querySelector('.cart__items').appendChild(item);
+};
+
+const appendValor = (valor) => {
+  document.querySelector('.total-price')
+    .innerText = valor;
+};
+
 // pega o id do produto clicado
 function getSkuFromProductItem(item) {
   return item.querySelector('span.item__sku').innerText;
@@ -18,17 +27,21 @@ function getSkuFromProductItem(item) {
 // função para o escutador do item no carrinho
 function cartItemClickListener(event) {
   event.target.remove();
+  let valorDoClicado = event.target.id;
+  valorDoClicado = parseFloat(valorDoClicado).toFixed(2);
+  valorNoCarrin(valorDoClicado, '-')
+  .then((subtraido) => appendValor(subtraido));
 }
 // cria os elementos para o carrinho
 function createCartItemElement({ id: sku, title: name, price: salePrice }) {
   const li = document.createElement('li');
   valorNoCarrin(salePrice, '+')
     .then((valor) => {
-      document.querySelector('.total-price')
-        .innerText = valor;
+      appendValor(valor);
     }).catch((erro) => {
       console.log(erro);
     });
+  li.id = salePrice;
   li.className = 'cart__item';
   li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
   li.addEventListener('click', cartItemClickListener);
@@ -42,7 +55,7 @@ const jogaNoCarrin = (event) => {
     .then((retorno) => retorno.json())
     .then((produto) => createCartItemElement(produto))
     .then((lista) => {
-      document.querySelector('.cart__items').appendChild(lista);
+      appendCartItem(lista);
     });
 };
 // cria os elementos para o produto
@@ -76,7 +89,7 @@ function createProductItemElement({ id: sku, title: name, thumbnail: image }) {
 const forecheProduct = (produtos) => produtos.forEach((produto) => {
   document.querySelector('.items').appendChild(createProductItemElement(produto));
 });
-
+// pedindo array para o api mercado livre
 const MimDeMercadoLivre = () => {
   const loading = '<div class="loading">Loading</div>';
   document.querySelector('.items').innerHTML = loading;
@@ -91,8 +104,8 @@ const MimDeMercadoLivre = () => {
 // limpar o carrinho de compras
 const limpaCarrin = () => {
   valorNoCarrin()
-    .then(() => {
-
+    .then((valor) => {
+      appendValor(valor);
     });
   const ol = document.querySelector('.cart__items');
   while (ol.firstChild) {
@@ -100,10 +113,19 @@ const limpaCarrin = () => {
   }
 };
 
+const confirmStorage = () => {
+  const localStorageCarrin = localStorage.getItem('listaCarrinho');
+  if (localStorageCarrin) {
+    localStorage.forEach((item) => createCartItemElement(item)
+      .then((lista) => appendCartItem(lista)));
+  }
+};
+
 window.onload = () => {
   MimDeMercadoLivre()
     .then((arrayProdutos) => forecheProduct(arrayProdutos))
     .catch((erro) => alert(erro));
+  confirmStorage();
   document.querySelector('.empty-cart').addEventListener('click', limpaCarrin);
   document.querySelector('.total-price')
     .innerText = `Preço Total:${0}`;
