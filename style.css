@@ -74,3 +74,11 @@
   font-size: 16pt;
   text-align: center;
 }
+
+.cart .cart__item {
+  border-bottom: blue solid 1px;
+}
+
+.price {
+  display: flex;
+}

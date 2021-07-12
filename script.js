@@ -1,4 +1,6 @@
 let valorDoCarrinho = 0;
+const pegaOl = () => document.querySelector('.cart__items');
+
 const valorNoCarrin = (price, operador) => new Promise((resolve, reject) => {
   if (!price) {
     valorDoCarrinho = 0;
@@ -11,8 +13,15 @@ const valorNoCarrin = (price, operador) => new Promise((resolve, reject) => {
   reject();
 });
 
+const updateStorage = () => {
+  const lista = pegaOl();
+  localStorage.setItem('lista', lista.innerHTML);
+};
+
 const appendCartItem = (item) => {
-  document.querySelector('.cart__items').appendChild(item);
+  const ol = pegaOl();
+  ol.appendChild(item);
+  updateStorage();
 };
 
 const appendValor = (valor) => {
@@ -20,19 +29,19 @@ const appendValor = (valor) => {
     .innerText = valor;
 };
 
-// pega o id do produto clicado
 function getSkuFromProductItem(item) {
   return item.querySelector('span.item__sku').innerText;
 }
-// função para o escutador do item no carrinho
+
 function cartItemClickListener(event) {
   event.target.remove();
   let valorDoClicado = event.target.id;
   valorDoClicado = parseFloat(valorDoClicado).toFixed(2);
   valorNoCarrin(valorDoClicado, '-')
-  .then((subtraido) => appendValor(subtraido));
+    .then((subtraido) => appendValor(subtraido));
+  updateStorage();
 }
-// cria os elementos para o carrinho
+
 function createCartItemElement({ id: sku, title: name, price: salePrice }) {
   const li = document.createElement('li');
   valorNoCarrin(salePrice, '+')
@@ -48,7 +57,6 @@ function createCartItemElement({ id: sku, title: name, price: salePrice }) {
   return li;
 }
 
-// coloca o item no carrinho de compras.
 const jogaNoCarrin = (event) => {
   const clicado = event.target.parentElement;
   fetch(`https://api.mercadolibre.com/items/${getSkuFromProductItem(clicado)}`)
@@ -58,7 +66,7 @@ const jogaNoCarrin = (event) => {
       appendCartItem(lista);
     });
 };
-// cria os elementos para o produto
+
 function createProductImageElement(imageSource) {
   const img = document.createElement('img');
   img.className = 'item__image';
@@ -85,13 +93,13 @@ function createProductItemElement({ id: sku, title: name, thumbnail: image }) {
 
   return section;
 }
-// add itens no site.
-const forecheProduct = (produtos) => produtos.forEach((produto) => {
+
+const forEacheProduct = (produtos) => produtos.forEach((produto) => {
   document.querySelector('.items').appendChild(createProductItemElement(produto));
 });
-// pedindo array para o api mercado livre
+
 const MimDeMercadoLivre = () => {
-  const loading = '<div class="loading">Loading</div>';
+  const loading = '<img class="loading" src="image/loading.gif">';
   document.querySelector('.items').innerHTML = loading;
   return fetch('https://api.mercadolibre.com/sites/MLB/search?q=$computador')
     .then((retorno) => retorno.json())
@@ -101,32 +109,30 @@ const MimDeMercadoLivre = () => {
     })
     .catch(() => alert('Consegui Não :('));
 };
-// limpar o carrinho de compras
+
 const limpaCarrin = () => {
   valorNoCarrin()
     .then((valor) => {
       appendValor(valor);
     });
-  const ol = document.querySelector('.cart__items');
-  while (ol.firstChild) {
-    ol.removeChild(ol.lastChild);
-  }
+    const ol = pegaOl();
+    while (ol.firstChild) {
+      ol.removeChild(ol.lastChild);
+    }
+    updateStorage();
 };
 
-const confirmStorage = () => {
-  const localStorageCarrin = localStorage.getItem('listaCarrinho');
-  if (localStorageCarrin) {
-    localStorage.forEach((item) => createCartItemElement(item)
-      .then((lista) => appendCartItem(lista)));
-  }
+const readLocalStorage = () => {
+  const listaStorage = localStorage.getItem('lista');
+  pegaOl().innerHTML = listaStorage;
 };
 
 window.onload = () => {
   MimDeMercadoLivre()
-    .then((arrayProdutos) => forecheProduct(arrayProdutos))
+    .then((arrayProdutos) => forEacheProduct(arrayProdutos))
     .catch((erro) => alert(erro));
-  confirmStorage();
-  document.querySelector('.empty-cart').addEventListener('click', limpaCarrin);
-  document.querySelector('.total-price')
-    .innerText = `Preço Total:${0}`;
+    document.querySelector('.empty-cart').addEventListener('click', limpaCarrin);
+    document.querySelector('.total-price')
+    .innerText = 0;
+    readLocalStorage();
 };
